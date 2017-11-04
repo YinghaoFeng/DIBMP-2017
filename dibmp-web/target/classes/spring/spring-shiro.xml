@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	<!-- 定义注解的扫描包，也就是说你必须配置好扫描包之后才可以扫描该包中所有类上出现的注解信息 -->
+	<context:component-scan base-package="cn.mldn"/>
+	<!-- 进行Shiro中缓存管理器的配置，现在就实现了EhCache-Shiro组件的配置 -->
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<!-- 配置EHCache组件要使用的配置文件的路径 -->
+		<property name="cacheManagerConfigFile" value="classpath:shiro/ehcache.xml"/>
+	</bean>
+	
+	<!-- 定义一个Cookie记住我的功能管理器 -->
+	<bean id="remembermeManager" class="org.apache.shiro.web.mgt.CookieRememberMeManager">
+		<!-- 定义要进行记住我功能的Cookie处理对象 -->
+		<property name="cookie" ref="remembermeCookie"/>
+	</bean>
+	
+	<!-- 设置RememberMe的Cookie存储配置类，使用的类同SessionIdCookie -->
+	<bean id="remembermeCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<!-- 在进行Cookie存储的时候都会存储一组信息，而这组信息一定是加密的 -->
+		<property name="name" value="mldnjava-rememberme"/>
+		<!-- 很多时候RememberMe可能只记录30天左右，如果不设置则无限长 -->
+		<property name="maxAge" value="2592000"/>
+	</bean>
+	
+	<!-- 定义项目之中要使用的认证与授权处理的Realm对象，该对象一定要配置到安全管理器之中 -->
+	<bean id="memberRealm" class="cn.mldn.dibmp.web.realm.MemberRealm">
+		<property name="credentialsMatcher">
+			<bean class="cn.mldn.dibmp.web.realm.cre.DefaultCredentialsMatcher"/>
+		</property>
+	</bean>  
+	
+	<!-- 配置SessionManager，进行Session管理操作 -->
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<!-- 定义SessionID的生成规则以及数据操作对象 -->
+		<property name="sessionDAO" ref="sessionDAO"/>
+		<!-- 定义的是SessionID的Cookie保存策略操作 -->
+		<property name="sessionIdCookie" ref="sessionIdCookie"/>
+		<!-- 默认启用Cookie进行SessionID存储 -->
+		<property name="sessionIdCookieEnabled" value="true"/>
+	</bean>
+	
+	<!-- 定义Shiro的安全管理器，所有的认证与授权处理一定要首先交给安全处理器进行管理 -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="memberRealm"/>	<!-- 配置要使用的Realm对象 -->
+		<!-- 定义要使用的缓存组件，本次使用的是EHCache -->
+		<property name="cacheManager" ref="cacheManager"/>
+		<!-- 配置在安全管理器之中要使用的Session管理器 -->
+		<property name="sessionManager" ref="sessionManager"/>
+		<!-- 将RememberMe管理器配置到安全管理器之中 -->
+		<property name="rememberMeManager" ref="remembermeManager"/>
+	</bean>
+	
+	
+	<!-- 定义一个Shiro自己的SessionID生成器 -->
+	<bean id="sessionIdGenerator" 
+		class="org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator"/>
+	<!-- 所有的SessionID最终一定要进行数据的存储操作，那么既然要进行存储，现在就需要定义一个Session的数据处理操作 -->
+	<bean id="sessionDAO" class="org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO">
+		<!-- 定义在进行Session管理之中所使用的缓存策略 -->
+		<property name="activeSessionsCacheName" value="shiro-activeSessionCache"/>
+		<!-- 获得生成的SessionID数据 -->
+		<property name="sessionIdGenerator" ref="sessionIdGenerator"/>
+	</bean>
+	<!-- 配置SessionID的Cookie存储策略操作 -->
+	<bean id="sessionIdCookie" class="org.apache.shiro.web.servlet.SimpleCookie">
+		<!-- 设置的是要保存的Cookie名字，默认Tomcat的保存Cookie名称为JSESSIONID -->
+		<property name="name" value="mldn-session-id"/>
+	</bean>
+	
+	
+	
+	
+	<!-- 配置注销登录的过滤器 -->
+	<bean id="logoutFilter" class="org.apache.shiro.web.filter.authc.LogoutFilter">
+		<!-- 注销之后的跳转路径 -->
+		<property name="redirectUrl" value="/logout.action"/>
+	</bean>
+	
+	<!-- 通过配置FormAuthenticationFilter来实现内置登录的操作控制 -->
+	<bean id="formAuthenticationFilter" class="cn.mldn.dibmp.web.rand.DefaultFormAuthenticationFilter">
+		<property name="usernameParam" value="mid"/>	<!-- 定义表单参数名称 -->
+		<property name="passwordParam" value="password"/>	<!-- 定义表单参数名称 -->
+		<!-- 如果要进行登录的提交一定要有一个控制器（Servlet、Filter），但是至少需要有一个提交地址 -->
+		<property name="loginUrl" value="/loginForm.action"/>
+		<!-- 配置登录的相关错误信息显示的属性名称，此处配置为error -->
+		<property name="failureKeyAttribute" value="error"/>
+		<!-- 配置rememberme选项的操作参数 -->
+		<property name="rememberMeParam" value="rememberme"/>
+		<property name="randname" value="rand"/>
+		<property name="randparam" value="code"/>
+	</bean> 
+	<!-- 配置文件里面已经将所有的配置交由Spring负责了，所以对于过滤的处理操作一定要交给指定的类完成配置 -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<!-- 在此过滤管理之中定义要使用的安全管理器 -->
+		<property name="securityManager" ref="securityManager"/>
+		<!-- 当认证或授权出现了错误之后应该跳转到登录页面，要由Action跳转到JSP页面 -->
+		<property name="loginUrl" value="/loginForm.action"/>
+		<!-- 当授权失败之后跳转的页面路径，也是通过Action跳转 -->
+		<property name="unauthorizedUrl" value="/unauth.action"/>
+		<!-- 当登录成功之后跳转到的指定页面 -->
+		<property name="successUrl" value="/pages/back/index.action"/>
+		<property name="filters">	<!-- 由于现在重新定义了过滤，所以要重新追加 -->
+			<map>
+				<!-- 当执行了authc的检测的时候，明确的找到新的过滤配置类 -->
+				<entry key="authc" value-ref="formAuthenticationFilter"/>
+				<!-- 当执行了注销的操作过滤时，会执行此项配置 -->
+				<entry key="logout" value-ref="logoutFilter"/>
+			</map>
+		</property>
+		<!-- 定义所有访问路径处理规则 -->
+		<property name="filterChainDefinitions">
+			<value>
+				/logout.page=logout
+				/loginForm.action=authc
+				/pages/back/**=authc
+			</value>
+		</property>
+	</bean> 
+</beans>

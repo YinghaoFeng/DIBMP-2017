@@ -1,0 +1,145 @@
+.badge-shopcar {
+  display: inline-block;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 1;
+  color: white;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: red;
+  border-radius: 10px;
+}
+.shopcar-form-control {
+  width: 60px;
+  height: 34px;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+          box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+  -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+       -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+          transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+} 
+.bottomNav {
+	background-color: #c0c0c0;
+	z-index: 999;
+	position: fixed;
+	bottom: 0px; 
+	left: 0px;
+	width: 100%;
+	_position: absolute; /* for IE6 */
+	_top: expression(documentElement.scrollTop + 
+		documentElement.clientHeight-this.offsetHeight); /* for IE6 */
+	overflow: visible;
+}
+
+html, body {
+	height: 100%;
+}
+
+.box {
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#6699FF',
+		endColorstr='#6699FF'); /*  IE */
+	background-image: linear-gradient(bottom, #6699FF 0%, #6699FF 100%);
+	background-image: -o-linear-gradient(bottom, #6699FF 0%, #6699FF 100%);
+	background-image: -moz-linear-gradient(bottom, #6699FF 0%, #6699FF 100%);
+	background-image: -webkit-linear-gradient(bottom, #6699FF 0%, #6699FF 100%);
+	background-image: -ms-linear-gradient(bottom, #6699FF 0%, #6699FF 100%);
+	margin: 0 auto;
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+.login-box {
+	width: 100%;
+	max-width: 500px;
+	height: 300px;
+	position: absolute;
+	top: 50%;
+	margin-top: -200px;
+}
+
+@media screen and (min-width:500px) {
+	.login-box {
+		left: 50%;
+		margin-left: -250px;
+	}
+}
+
+.form {
+	width: 100%;
+	max-width: 500px;
+	height: 275px;
+	margin: 25px auto 0px auto;
+	padding-top: 25px;
+}
+
+.login-content {
+	height: 200px;
+	width: 100%;
+	max-width: 500px;
+	background-color: rgba(255, 250, 2550, .6);
+	float: left;
+}
+
+.input-group {
+	margin: 0px 0px 30px 0px !important;
+}
+
+.form-control, .input-group {
+	height: 40px;
+}
+
+.form-group {
+	margin-bottom: 0px !important;
+}
+
+.login-title {
+	padding: 20px 10px;
+	background-color: rgba(0, 0, 0, .6);
+}
+
+.login-title h1 {
+	margin-top: 10px !important;
+}
+
+.login-title small {
+	color: #fff;
+}
+
+.link p {
+	line-height: 20px;
+	margin-top: 30px;
+}
+
+.btn-sm {
+	padding: 8px 24px !important;
+	font-size: 16px !important;
+}
+
+.contentback {
+	background-color: white;
+	height: 100%;
+}
+
+.back {
+	background-color: gainsboro;
+}
+
+.manback {
+	background-color: #9AD6FA;
+}
+
+.userback {
+	background-color: #BBFC9F;
+}

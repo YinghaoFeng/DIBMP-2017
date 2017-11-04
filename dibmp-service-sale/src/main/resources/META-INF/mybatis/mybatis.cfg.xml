@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration   
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"   
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<typeAliases>	<!-- 定义所有要使用类的别名 -->
+		<!-- 设置了包名称，则以后的别名就是各个VO的类名称 -->
+		<package name="cn.mldn.dibmp.vo"/>
+	</typeAliases>
+<!-- 	<mappers>									映射文件信息
+		<package name="mybatis.mapper.cn.mldn.mldnmybatis.vo"/>
+	</mappers>  -->
+</configuration>

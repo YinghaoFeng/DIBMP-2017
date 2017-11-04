@@ -1,0 +1,5 @@
+cn\mldn\dibmp\vo\Action.class
+cn\mldn\dibmp\vo\Role.class
+cn\mldn\dibmp\vo\Dept.class
+cn\mldn\dibmp\service\IMemberService.class
+cn\mldn\dibmp\vo\Member.class

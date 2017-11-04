@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	<context:annotation-config/>	<!-- 启用注解配置 -->
+	<context:component-scan base-package="cn.mldn"/>
+	<!-- 定义控制器的代理配置处理操作，即：需要使用注解进行路径拦截操作中起作用 -->
+	<bean id="defaultAdvisorAutoProxyCreator"
+		class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+		depends-on="lifecycleBeanPostProcessor">
+		<property name="proxyTargetClass" value="true"/>	<!-- 代理转换 -->
+	</bean> 
+	<!-- 以上配置了要使用的代理类，但是需要在安全管理器之中配置一个拦截器 -->
+	<bean id="authorizationAttributeSourceAdvisor" 
+		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<!-- 引入要使用的安全管理器 -->
+		<property name="securityManager" ref="securityManager"/>
+	</bean> 
+	
+	<mvc:annotation-driven/>	<!-- 启用SpringMVC注解配置支持 -->
+	<mvc:default-servlet-handler/>	<!-- 启动Servlet的配置处理 -->
+<!-- 	<mvc:interceptors>	定义拦截器，而且可以定义多个
+		<mvc:interceptor>
+			<mvc:mapping path="/pages/**/*.action"/>	提交到Action请求执行本拦截器
+			<bean class="cn.mldn.util.ValidationInterceptor"/>
+		</mvc:interceptor>
+	</mvc:interceptors> -->
+	
+	
+	
+	<!-- 配置错误的映射处理，出现了指定的异常之后可以让其跳转到错误页（/WEB-INF/pages/errors.jsp） -->
+	<bean class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="exceptionMappings">	<!-- 进行整体的错误映射 -->
+			<props>	<!-- 定义错误类型 -->
+				<prop key="org.springframework.web.multipart.MaxUploadSizeExceededException">
+					errors
+				</prop>
+				<prop key="org.apache.shiro.authz.UnauthorizedException">
+					errors
+				</prop>
+			</props> 
+		</property>
+	</bean>
+	
+	
+	<!-- 配置FileUpload组件在Spring中整合的处理类 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<!-- 定义上传文件的最大的字节大小，本次设置为5M -->
+		<property name="maxUploadSize" value="20971520"/>
+		<!-- 定义每一个上传文件允许的最大的字节数，允许为2M -->
+		<property name="maxUploadSizePerFile" value="20971520"/>
+		<!-- 描述的是内存之中允许占用的最大字节数 -->
+		<property name="maxInMemorySize" value="41943040"/>
+	</bean>
+	
+	<!-- 配置SpringMVC里面要使用的各项资源 -->
+	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">	<!-- 定义所有的BaseName名称 -->
+			<array>
+				<value>message.cn.mldn.pages</value>
+				<value>message.cn.mldn.messages</value>
+				<value>message.cn.mldn.validations</value>
+			</array> 
+		</property>
+	</bean>	 
+	
+	<!-- 启动一个视图访问的解析处理器，该操作会自动在容器中加载，不需要做任何的依赖配置 -->
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/pages/"/>
+		<property name="suffix" value=".jsp"/>
+	</bean>
+	<!-- 进行所有静态WEB资源的映射路径配置 -->
+	<mvc:resources location="/WEB-INF/js/" mapping="/js/**"/>
+	<mvc:resources location="/WEB-INF/css/" mapping="/css/**"/>
+	<mvc:resources location="/WEB-INF/images/" mapping="/images/**"/>
+	<mvc:resources location="/WEB-INF/jquery/" mapping="/jquery/**"/>
+	<mvc:resources location="/WEB-INF/bootstrap/" mapping="/bootstrap/**"/>
+	<mvc:resources location="/WEB-INF/upload/" mapping="/upload/**"/>
+	<mvc:resources location="/WEB-INF/dist/" mapping="/dist/**"/>
+	
+	
+
+</beans>

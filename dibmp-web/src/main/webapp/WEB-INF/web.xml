@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID" version="3.1">
+	<display-name>dibmp-web</display-name>
+	<error-page>
+		<error-code>500</error-code>
+		<location>/errors.action</location>
+	</error-page>
+	<error-page>
+		<exception-type>
+			org.apache.shiro.authz.UnauthorizedException
+		</exception-type>
+		<location>/errors.action</location>
+	</error-page> 
+	<error-page>
+		<exception-type>
+			org.apache.shiro.authz.AuthorizationException
+		</exception-type>
+		<location>/errors.action</location>
+	</error-page> 
+
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>	<!-- Spring之中定义的属性名称 -->
+		<param-value>classpath:spring/spring-*.xml</param-value><!-- 
+			资源文件 -->
+	</context-param>
+	
+	<filter>
+		<filter-name>shiroFilter</filter-name>
+		<filter-class>
+			org.springframework.web.filter.DelegatingFilterProxy
+		</filter-class>
+		<init-param>	<!-- 此时所有的Shiro的配置管理交由Spring负责管理 -->
+			<param-name>targetFilterLifecycle</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>shiroFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+		<dispatcher>REQUEST</dispatcher>
+		<dispatcher>FORWARD</dispatcher>
+		<dispatcher>INCLUDE</dispatcher>
+		<dispatcher>ERROR</dispatcher>
+	</filter-mapping>
+<!-- 	<filter>
+		<filter-name>DruidWebStatFilter</filter-name>
+		<filter-class>com.alibaba.druid.support.http.WebStatFilter</filter-class>
+		<init-param>
+			<param-name>exclusions</param-name>
+			<param-value>*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>DruidWebStatFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>DruidStatView</servlet-name>
+		<servlet-class>com.alibaba.druid.support.http.StatViewServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DruidStatView</servlet-name>
+		<url-pattern>/druid/*</url-pattern>
+	</servlet-mapping> -->
+	<servlet>
+		<servlet-name>RandomCode</servlet-name>
+		<servlet-class>cn.mldn.util.web.RandomCode</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>RandomCode</servlet-name>
+		<url-pattern>/ImageCode</url-pattern>
+	</servlet-mapping>
+	<!-- 设置SpringMVC之中的核心控制器类，利用此类实现所有的请求分发的处理（Action） -->
+	<servlet>
+		<servlet-name>springmvc</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>	<!-- 定义SpringMVC自己的配置文件 -->
+			<param-name>contextConfigLocation</param-name>
+			<param-value>classpath:spring/spring-mvc.xml</param-value>
+		</init-param>
+	</servlet>
+	<servlet-mapping>	<!-- SpringMVC设计之中的路径都是以action结尾的 -->
+		<servlet-name>springmvc</servlet-name>
+		<url-pattern>*.action</url-pattern>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<!-- 配置编码过滤器，以解决数据传输乱码问题 -->
+	<filter>
+		<filter-name>encoding</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>	<!-- 设置要使用的编码 -->
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encoding</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
+</web-app>

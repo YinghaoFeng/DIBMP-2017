@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+	<!-- 开启事务控制的Annotation支持，该支持针对于指定的事务管理器有效 -->
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<!-- 事务控制专门提供有切面程序类 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>	<!-- 配置事务控制属性，事务控制是以业务层的方法为主的 -->
+			<tx:method name="add*" propagation="REQUIRED"/>	<!-- 设置了事务传播属性 -->
+			<tx:method name="create*" propagation="REQUIRED"/>	<!-- 设置了事务传播属性 -->
+			<tx:method name="update*" propagation="REQUIRED"/>	<!-- 设置了事务传播属性 -->
+			<tx:method name="edit*" propagation="REQUIRED"/>	<!-- 设置了事务传播属性 -->
+			<tx:method name="remove*" propagation="REQUIRED"/>	<!-- 设置了事务传播属性 -->
+			<tx:method name="delete*" propagation="REQUIRED"/>	<!-- 设置了事务传播属性 -->
+			<tx:method name="get*" propagation="REQUIRED" read-only="true"/>
+			<tx:method name="list*" propagation="REQUIRED" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>	<!-- 定义切面表达式操作 -->
+		<aop:pointcut expression="execution(public * cn.mldn..service..*.*(..))" id="myPointcut"/>
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="myPointcut"/>
+	</aop:config>
+	
+	
+	<!-- 进行事务管理的配置定义，这个配置的ID为tx组件主要使用的事务管理类对象名称 -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" /> <!-- 定义要管理的DataSource -->
+	</bean>
+	<!-- 定义注解的扫描包，也就是说你必须配置好扫描包之后才可以扫描该包中所有类上出现的注解信息 -->
+	<context:component-scan base-package="cn.mldn" />
+</beans>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init">
+		<property name="driverClassName" value="${db.druid.driverClassName}"/>	<!-- 定义数据库驱动程序 -->
+		<property name="url" value="${db.druid.url}"/>	<!-- 数据库连接地址 --> 
+		<property name="username" value="${db.druid.username}"/>		<!-- 数据库连接用户名 -->
+		<property name="password" value="${db.druid.password}"/>	<!-- 数据库连接密码 -->
+		<property name="maxActive" value="${db.druid.maxActive}"/>	<!-- 最大连接数 -->
+		<property name="minIdle" value="${db.druid.minIdle}"/>	<!-- 最小连接池 -->
+		<property name="initialSize" value="${db.druid.initialSize}"/>	<!-- 初始化连接大小 -->
+		<property name="maxWait" value="${db.druid.maxWait}"/>	<!-- 最大等待时间 -->
+		<property name="timeBetweenEvictionRunsMillis" value="${db.druid.timeBetweenEvictionRunsMillis}" />  <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 --> 
+		<property name="minEvictableIdleTimeMillis" value="${db.druid.minEvictableIdleTimeMillis}" /> <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 --> 
+		<property name="validationQuery" value="${db.druid.validationQuery}" />  <!-- 验证SQL -->
+		<!-- 建议配置为true，不影响性能，并且保证安全性。 -->
+		<!-- 申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。 -->
+		<property name="testWhileIdle" value="${db.druid.testWhileIdle}" />
+		<property name="testOnBorrow" value="${db.druid.testOnBorrow}" />	<!-- 申请连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能 -->
+		<property name="testOnReturn" value="${db.druid.testOnReturn}" /> 	<!-- 归还连接时执行validationQuery检测连接是否有效，做了这个配置会降低性能 -->
+		<!-- 是否缓存preparedStatement，也就是PSCache。PSCache对支持游标的数据库性能提升巨大，比如说oracle。在mysql下建议关闭。 -->
+		<property name="poolPreparedStatements" value="${db.druid.poolPreparedStatements}" />
+		<!-- 要启用PSCache，必须配置大于0，当大于0时，poolPreparedStatements自动触发修改为true。在Druid中，不会存在Oracle下PSCache占用内存过多的问题，可以把这个数值配置大一些，比如说100 -->
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="${db.druid.maxPoolPreparedStatementPerConnectionSize}" /> 
+		<property name="filters" value="${db.druid.filters}" /> <!-- 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙 -->
+	</bean>
+
+	<!-- 在开发之中C3P0数据库连接池使用非常广泛 -->
+<!-- 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		<property name="driverClass" value="${db.driverClass}"/>	驱动程序
+		<property name="jdbcUrl" value="${db.jdbcUrl}"/>	连接地址
+		<property name="user" value="${db.user}"/>	用户名
+		<property name="password" value="${db.password}"/>	密码
+		<property name="maxPoolSize" value="${db.maxPoolSize}"/>	设置最大连接
+		<property name="initialPoolSize" value="${db.initialPoolSize}"/>	初始化连接池大小
+		<property name="minPoolSize" value="${db.minPoolSize}"/> 连接池最小的连接数
+		<property name="maxIdleTime" value="${db.maxIdleTime}"/>	最大等待时间
+	</bean>	 -->
+	
+	<!-- 此时就将数据库连接对象交由Spring负责管理 -->
+<!-- 	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="org.gjt.mm.mysql.Driver"/>
+		<property name="url" value="jdbc:mysql://localhost:3306/mldn"/>
+		<property name="username" value="root"/>
+		<property name="password" value="mysqladmin"/>
+	</bean> -->
+	
+	<!-- 定义注解的扫描包，也就是说你必须配置好扫描包之后才可以扫描该包中所有类上出现的注解信息 -->
+	<context:component-scan base-package="cn.mldn.mldnspring"/>
+</beans>
